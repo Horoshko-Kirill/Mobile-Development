@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.calculator"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -62,4 +62,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
+    implementation("androidx.security:security-crypto:1.1.0-alpha03")
+    implementation("androidx.biometric:biometric:1.1.0")
 }
