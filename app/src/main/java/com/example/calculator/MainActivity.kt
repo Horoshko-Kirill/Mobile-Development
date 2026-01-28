@@ -50,17 +50,20 @@ class MainActivity : ComponentActivity() {
             var lightTheme by remember { mutableStateOf<ThemeData?>(null) }
             var darkTheme by remember { mutableStateOf<ThemeData?>(null) }
 
-
             val scope = rememberCoroutineScope()
 
             LaunchedEffect(Unit) {
+
                 val (light, dark) = themeRepository.loadAllThemes(userId)
                 lightTheme = light
                 darkTheme = dark
             }
 
+
+            val currentTheme = if (useDarkTheme) darkTheme ?: ThemeData() else lightTheme ?: ThemeData()
+
             CalculatorTheme(
-                themeData = if (useDarkTheme) darkTheme else lightTheme,
+                themeData = currentTheme,
                 darkTheme = useDarkTheme
             ) {
                 CalculatorScreen(
@@ -76,6 +79,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+
 
 
 

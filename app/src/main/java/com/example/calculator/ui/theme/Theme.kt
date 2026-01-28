@@ -1,11 +1,11 @@
 package com.example.calculator.ui.theme
 
-import android.os.Build
+
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import com.example.calculator.data.remote.ThemeData
+import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -26,25 +26,24 @@ fun CalculatorTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context)
-            else dynamicLightColorScheme(context)
+    val colorScheme = if (themeData != null) {
+        if (darkTheme) {
+            darkColorScheme(
+                primary = Color(android.graphics.Color.parseColor(themeData.primaryColor)),
+                secondary = Color(android.graphics.Color.parseColor(themeData.secondaryColor)),
+                tertiary = Color(android.graphics.Color.parseColor(themeData.tertiaryColor))
+            )
+        } else {
+            lightColorScheme(
+                primary = Color(android.graphics.Color.parseColor(themeData.primaryColor)),
+                secondary = Color(android.graphics.Color.parseColor(themeData.secondaryColor)),
+                tertiary = Color(android.graphics.Color.parseColor(themeData.tertiaryColor))
+            )
         }
-
-        else -> {
-            if (themeData != null) {
-                lightColorScheme(
-                    primary = androidx.compose.ui.graphics.Color(android.graphics.Color.parseColor(themeData.primaryColor)),
-                    secondary = androidx.compose.ui.graphics.Color(android.graphics.Color.parseColor(themeData.secondaryColor)),
-                    tertiary = androidx.compose.ui.graphics.Color(android.graphics.Color.parseColor(themeData.tertiaryColor))
-                )
-            } else {
-                if (darkTheme) DarkColorScheme else LightColorScheme
-            }
-        }
+    } else {
+        if (darkTheme) DarkColorScheme else LightColorScheme
     }
+
 
     MaterialTheme(
         colorScheme = colorScheme,

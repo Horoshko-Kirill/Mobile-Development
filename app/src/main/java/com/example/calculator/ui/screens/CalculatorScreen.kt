@@ -19,8 +19,9 @@ import com.example.calculator.viewmodel.CalculatorViewModel
 import com.example.calculator.ui.theme.*
 import com.example.calculator.utils.PlatformUtils
 import androidx.compose.runtime.*
-import com.example.calculator.data.remote.ThemeData
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+
 
 
 @Composable
@@ -56,40 +57,49 @@ fun CalculatorScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBackground)
+            .background(MaterialTheme.colorScheme.background)
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        LazyColumn(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
-            reverseLayout = true,
-            verticalArrangement = Arrangement.Bottom
+                .padding(bottom = 8.dp),
+            verticalAlignment = Alignment.Top
         ) {
-            items(history.takeLast(1000)) { entry ->
-                Text(
-                    text = entry,
-                    color = TextColor.copy(alpha = 0.7f),
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp)
-                )
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(150.dp),
+                reverseLayout = true,
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                items(history.takeLast(1000)) { entry ->
+                    Text(
+                        text = entry,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(
+                onClick = onThemeChange,
+                modifier = Modifier
+                    .height(40.dp)
+                    .width(80.dp)
+            ) {
+                Text("Тема", fontSize = 12.sp)
             }
         }
 
-        Button(
-            onClick = onThemeChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        ) {
-            Text("Сменить тему")
-        }
-        
         Spacer(modifier = Modifier.height(16.dp))
 
         Display(
