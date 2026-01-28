@@ -19,11 +19,18 @@ import com.example.calculator.viewmodel.CalculatorViewModel
 import com.example.calculator.ui.theme.*
 import com.example.calculator.utils.PlatformUtils
 import androidx.compose.runtime.*
+import com.example.calculator.data.remote.ThemeData
+import androidx.compose.material3.Button
+
+
 @Composable
 fun CalculatorScreen(
     viewModel: CalculatorViewModel = viewModel(),
-    platformUtils: PlatformUtils
+    platformUtils: PlatformUtils,
+    onThemeChange: () -> Unit
 ) {
+
+
 
     val state by viewModel.state.collectAsState()
     val history by viewModel.history.collectAsState()
@@ -74,6 +81,15 @@ fun CalculatorScreen(
             }
         }
 
+        Button(
+            onClick = onThemeChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            Text("Сменить тему")
+        }
+        
         Spacer(modifier = Modifier.height(16.dp))
 
         Display(

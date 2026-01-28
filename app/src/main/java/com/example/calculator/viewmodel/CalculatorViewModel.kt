@@ -8,9 +8,12 @@ import com.example.calculator.domain.model.CalculatorState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.example.calculator.data.remote.HistoryRepository
+import com.example.calculator.data.repository.CombinedHistoryRepository
 
 class CalculatorViewModel(
-    private val storage: LocalStorage? = null // для Step1 можно null
+    private val combinedHistory: CombinedHistoryRepository? = null,
+    private val userId: String = "default_user"
 ) : ViewModel() {
 
     private val engine = CalculatorEngine()
@@ -20,6 +23,14 @@ class CalculatorViewModel(
 
     private val _history = MutableStateFlow<List<String>>(emptyList())
     val history: StateFlow<List<String>> = _history
+
+    init {
+        viewModelScope.launch {
+            combinedHistory?.let { repo ->
+                _history.value = repo.getHistory(userId).reversed() // последние сверху
+            }
+        }
+    }
     fun onNumberClick(number: String) {
         val current = _state.value
 
@@ -77,9 +88,12 @@ class CalculatorViewModel(
 
     private fun saveToHistory(entry: String) {
         _history.value = listOf(entry) + _history.value
-        storage?.let { st ->
-            viewModelScope.launch { st.addToHistory(entry) }
+        combinedHistory?.let { repo ->
+            viewModelScope.launch {
+                repo.saveEntry(userId, entry)
+            }
         }
     }
+
 
 }
