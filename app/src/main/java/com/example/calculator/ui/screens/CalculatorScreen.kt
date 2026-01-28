@@ -17,12 +17,25 @@ import com.example.calculator.ui.components.CalcButton
 import com.example.calculator.ui.components.Display
 import com.example.calculator.viewmodel.CalculatorViewModel
 import com.example.calculator.ui.theme.*
-
+import com.example.calculator.utils.PlatformUtils
+import androidx.compose.runtime.*
 @Composable
-fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
+fun CalculatorScreen(
+    viewModel: CalculatorViewModel = viewModel(),
+    platformUtils: PlatformUtils
+) {
 
     val state by viewModel.state.collectAsState()
     val history by viewModel.history.collectAsState()
+
+    var copyResult by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(copyResult) {
+        copyResult?.let {
+            platformUtils.copyToClipboard("Result", it)
+            copyResult = null // сбрасываем
+        }
+    }
 
     val buttons = listOf(
         listOf("sin","cos","tan","ln","log"),
@@ -40,13 +53,6 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Text(
-            "History",
-            color = TextColor,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
 
         LazyColumn(
             modifier = Modifier
@@ -91,12 +97,26 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                             .aspectRatio(1f),
                         shape = true
                     ) {
-                        when(label) {
-                            "C" -> viewModel.onClear()
-                            "=" -> viewModel.onEquals()
-                            in listOf("+","-","*","/","^","%") -> viewModel.onOperatorClick(label)
-                            in listOf("√","!","sin","cos","tan","ln","log","exp") -> viewModel.onUnaryOperation(label)
-                            else -> viewModel.onNumberClick(label)
+
+                        platformUtils.vibrate()
+                        platformUtils.playClick()
+
+                        try {
+                            when(label) {
+                                "C" -> {
+                                    viewModel.onClear()
+                                    platformUtils.showToast("Очистка дисплея")
+                                }
+                                "=" -> {
+                                    viewModel.onEquals()
+                                    copyResult = viewModel.state.value.display
+                                }
+                                in listOf("+","-","*","/","^","%") -> viewModel.onOperatorClick(label)
+                                in listOf("√","!","sin","cos","tan","ln","log","exp") -> viewModel.onUnaryOperation(label)
+                                else -> viewModel.onNumberClick(label)
+                            }
+                        } catch (e: Exception) {
+                            platformUtils.showToast("Ошибка: ${e.message}")
                         }
                     }
                 }
